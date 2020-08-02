@@ -1,65 +1,60 @@
+import { useEffect, useRef } from 'react'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import useMovement from '../components/useMovement'
 
 export default function Home() {
+  const linkDownRef = useRef(null);
+  const linkRightRef = useRef(null);
+  const linkUpRef = useRef(null);
+  const linkLeftRef = useRef(null);
+  const {x, y, direction, move} = useMovement();
+
+  const canvas = useRef(null);
+
+  useEffect(() => {
+    const ctx = canvas.current.getContext('2d');
+    ctx.canvas.height = window.innerHeight;
+    ctx.canvas.width = window.innerWidth;
+  }, []);
+
+  useEffect(() => {
+    const ctx = canvas.current.getContext('2d');
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+
+    let theLinkRef;
+    if(direction === 'up') theLinkRef = linkUpRef;
+    if(direction === 'down') theLinkRef = linkDownRef;
+    if(direction === 'left') theLinkRef = linkLeftRef;
+    if(direction === 'right') theLinkRef = linkRightRef;
+
+    ctx.drawImage(theLinkRef.current, x, y)
+  }, [x,y]);
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Zelda</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <main className={styles.app}>
+        <canvas ref={canvas}/>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <div className={styles.arrows}>
+          <button onClick={() => move('up')}>Up</button>
+          <button onClick={() => move('left')}>Left</button>
+          <button onClick={() => move('down')}>Down</button>
+          <button onClick={() => move('right')}>Right</button>
+        </div>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className={styles.images}>
+          <img src="https://i.imgur.com/JYUB0m3.png" ref={linkDownRef} alt="Down" />
+          <img src="https://i.imgur.com/GEXD7bk.gif" ref={linkRightRef} alt="Right" />
+          <img src="https://i.imgur.com/XSA2Oom.gif" ref={linkUpRef} alt="Up" />
+          <img src="https://i.imgur.com/4LGAZ8t.gif" ref={linkLeftRef} alt="Left" />
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
     </div>
   )
 }
